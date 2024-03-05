@@ -11,7 +11,7 @@ def simulation_vary_one(arm_prob, df, sim_per_interval, interval, change_by, alg
         if alg == 'dts':
             discounted_thompson_sampling_for_sim([arm_prob[0], min(arm_prob[1] + change_by*i, 1)],
                                                  sim_per_interval, df,
-                                                 (sim_per_interval*i) + 1)
+                                                 (sim_per_interval*i))
 
             print(f'### Phase {i+1} results ###')
 
@@ -63,7 +63,7 @@ def simulation_vary_both(arm_prob, df, sim_per_interval, interval, change_by, al
             discounted_thompson_sampling_for_sim([min(arm_prob[0] + change_by*i, 1),
                                                  min(arm_prob[1] + change_by*i, 1)],
                                                  sim_per_interval, df,
-                                                 (sim_per_interval*i) + 1)
+                                                 (sim_per_interval*i))
             print(f'### Phase {i} results ###')
 
             arm1_mean = main.dts_reward_total[0]/main.dts_pulls_total[0]
@@ -85,7 +85,7 @@ def simulation_vary_both(arm_prob, df, sim_per_interval, interval, change_by, al
             discounted_sliding_thompson_sampling_for_sim([min(arm_prob[0] + change_by*i, 1),
                                                           min(arm_prob[1] + change_by*i, 1)],
                                                          sim_per_interval, df, sw,
-                                                         (sim_per_interval*i) + 1)
+                                                         (sim_per_interval*i))
             print(f'### Phase {i+1} results ###')
 
             arm1_mean = main.dsts_reward_total[0]/main.dsts_pulls_total[0]
