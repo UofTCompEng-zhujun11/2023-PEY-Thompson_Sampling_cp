@@ -218,6 +218,7 @@ def discounted_sliding_thompson_sampling_for_sim(bandit_probs, n, df, sw, startp
         else:
             pull(1, bandit_probs, dsts_reward_total, dsts_pulls_total, dsts_full_rec, 'dsts')
 
+
         if dsts_pulls_total[0] != 0 and dsts_pulls_total[1] != 0:
             dsts_false_positive_at_t.append([false_positive(dsts_reward_total, dsts_pulls_total)[0],
                                             false_positive(dsts_reward_total, dsts_pulls_total)[1]])
