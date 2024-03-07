@@ -329,14 +329,13 @@ def sum(start, end, reward, pull):
     return reward_sum, pull_sum
 
 
-def false_positive(reward, pulls, arm):
-    arm_fp = (pulls[arm]-reward[arm]) / pulls[arm]
-    # arm2_fp = (pulls[1]-reward[1]) / pulls[1]
+def false_positive(reward, pulls, arm, bandit_prob):
+    arm_fp = ((pulls[arm]-reward[arm]) / pulls[arm]) / (1 - bandit_prob[arm])
 
     return arm_fp
 
 
-def false_negative(rec, arm):
+def power(rec, arm, bandit_prob):
     global records
     total_trials = len(rec)
     num_rewarded = records.dts_reward_total[arm]
@@ -345,6 +344,6 @@ def false_negative(rec, arm):
         total_reward += subrec[arm]
 
     miss_reward = total_reward - num_rewarded
-
-    return miss_reward/total_trials
+    fn = miss_reward/(bandit_prob[arm])
+    return 1 - fn
 
