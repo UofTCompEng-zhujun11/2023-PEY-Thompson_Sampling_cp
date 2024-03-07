@@ -1,16 +1,7 @@
-import main
+from main import records
 import Simulation
 import matplotlib.pyplot as plt
 import numpy as np
-
-# Best arm remains unchanged, but continue to increase in mean reward
-Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dsts', 5)
-Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dts')
-
-# Best arm continue to increase in mean reward
-Simulation.simulation_vary_one([0.5, 0.9], 0.8, 500, 3, -0.02, 'dsts', 5)
-Simulation.simulation_vary_one([0.5, 0.9], 0.8, 500, 3, -0.02, 'dts')
-
 
 # Functions to compute the criteria
 def retrieve_reward_at_t(info, arm):
@@ -41,34 +32,31 @@ def retrieve_false_positive_at_t(info, arm):
 
 def put_tgt(prop):
     if prop == 'reward':
-        prop_arm_1_dts = retrieve_reward_at_t(main.dts_full_rec, 0)
-        prop_arm_2_dts = retrieve_reward_at_t(main.dts_full_rec, 1)
-        prop_arm_1_dsts = retrieve_reward_at_t(main.dsts_full_rec, 0)
-        prop_arm_2_dsts = retrieve_reward_at_t(main.dsts_full_rec, 1)
+        prop_arm_1_dts = retrieve_reward_at_t(records.dts_full_rec, 0)
+        prop_arm_2_dts = retrieve_reward_at_t(records.dts_full_rec, 1)
+        prop_arm_1_dsts = retrieve_reward_at_t(records.dsts_full_rec, 0)
+        prop_arm_2_dsts = retrieve_reward_at_t(records.dsts_full_rec, 1)
 
-    if prop == 'power':
-        prop_arm_1_dts = retrieve_power_at_t(main.dts_power_at_t, 0)
-        prop_arm_2_dts = retrieve_power_at_t(main.dts_power_at_t, 1)
-        prop_arm_1_dsts = retrieve_power_at_t(main.dsts_power_at_t, 0)
-        prop_arm_2_dsts = retrieve_power_at_t(main.dsts_power_at_t, 1)
+    elif prop == 'power':
+        prop_arm_1_dts = retrieve_power_at_t(records.dts_power_at_t, 0)
+        prop_arm_2_dts = retrieve_power_at_t(records.dts_power_at_t, 1)
+        prop_arm_1_dsts = retrieve_power_at_t(records.dsts_power_at_t, 0)
+        prop_arm_2_dsts = retrieve_power_at_t(records.dsts_power_at_t, 1)
 
     else:
-        prop_arm_1_dts = retrieve_false_positive_at_t(main.dts_false_positive_at_t, 0)
-        prop_arm_2_dts = retrieve_false_positive_at_t(main.dts_false_positive_at_t, 1)
-        prop_arm_1_dsts = retrieve_false_positive_at_t(main.dsts_false_positive_at_t, 0)
-        prop_arm_2_dsts = retrieve_false_positive_at_t(main.dsts_false_positive_at_t, 1)
+        prop_arm_1_dts = retrieve_false_positive_at_t(records.dts_false_positive_at_t, 0)
+        prop_arm_2_dts = retrieve_false_positive_at_t(records.dts_false_positive_at_t, 1)
+        prop_arm_1_dsts = retrieve_false_positive_at_t(records.dsts_false_positive_at_t, 0)
+        prop_arm_2_dsts = retrieve_false_positive_at_t(records.dsts_false_positive_at_t, 1)
 
     return [prop_arm_1_dts, prop_arm_2_dts, prop_arm_1_dsts, prop_arm_2_dsts]
 
 
-x = np.linspace(0, 1000, 1500)
-
-y = put_tgt('reward')
-
-
 def plot_result(x, y, title, x_lab, y_lab, to_be_plot):
+    counter = 0
     for i in y:
-        plt.plot(x, i, label=str(to_be_plot) + " for arm" + str(1))
+        plt.plot(x, i, label=str(to_be_plot) + " for arm " + str(counter % 2 + 1) + " " +("dts" if counter < 2 else "dsts"))
+        counter += 1
 
     plt.title(title)
     plt.xlabel(x_lab)
@@ -78,8 +66,25 @@ def plot_result(x, y, title, x_lab, y_lab, to_be_plot):
     plt.show()
 
 
-plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
+def constructPlot():
+    x = np.linspace(0, 1000, 1500)
+    # Best arm remains unchanged, but continue to increase in mean reward
+    Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dsts', 5)
+    Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dts')
+    
+    y = put_tgt('fp')
+    plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
             'Time Steps', 'False Positive Rates', 'False Positive Rates')
+    
+    records.clearData()
+    # Best arm continue to increase in mean reward
+    Simulation.simulation_vary_one([0.5, 0.9], 0.8, 500, 3, -0.02, 'dsts', 5)
+    Simulation.simulation_vary_one([0.5, 0.9], 0.8, 500, 3, -0.02, 'dts')
 
+    y = put_tgt('fp')
+    plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
+            'Time Steps', 'False Positive Rates', 'False Positive Rates')
+    
+    return
 
-
+constructPlot()
