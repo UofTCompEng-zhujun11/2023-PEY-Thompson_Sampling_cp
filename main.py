@@ -94,10 +94,26 @@ def discounted_thompson_sampling_for_sim(bandit_probs, n, df, startp=0):
         else:
             pull(1, bandit_probs, dts_reward_total, dts_pulls_total, dts_full_rec, 'dts')
 
-        if dts_pulls_total[0] != 0 and dts_pulls_total[1] != 0:
-            dts_false_positive_at_t.append([false_positive(dts_reward_total, dts_pulls_total)[0],
-                                          false_positive(dts_reward_total, dts_pulls_total)[1]])
+        # if dts_pulls_total[0] != 0 and dts_pulls_total[1] != 0:
+        #     dts_false_positive_at_t.append([false_positive(dts_reward_total, dts_pulls_total, 0),
+        #                                   false_positive(dts_reward_total, dts_pulls_total)[1]])
+        #     dts_power_at_t.append([false_negative(dts_full_rec, 0), false_negative(dts_full_rec, 1)])
+        if dts_pulls_total[0] != 0 and dts_pulls_total[1] == 0:
+            dts_false_positive_at_t.append([false_positive(dts_reward_total, dts_pulls_total, 0),
+                                             0])
+            dsts_power_at_t.append([false_negative(dts_full_rec, 0), 0])
+
+        elif dts_pulls_total[0] == 0 and dts_pulls_total[1] != 0:
+            dts_false_positive_at_t.append([0, false_positive(dts_reward_total, dts_pulls_total, 1)])
+            dts_power_at_t.append([0, false_negative(dts_full_rec, 1)])
+
+        elif dsts_pulls_total[0] != 0 and dts_pulls_total[1] != 0:
+            dts_false_positive_at_t.append([false_positive(dts_reward_total, dts_pulls_total, 0),
+                                             false_positive(dts_reward_total, dts_pulls_total, 1)])
             dts_power_at_t.append([false_negative(dts_full_rec, 0), false_negative(dts_full_rec, 1)])
+        else:
+            dts_false_positive_at_t.append([0, 0])
+            dts_power_at_t.append([0, 0])
 
     return
 
@@ -218,11 +234,24 @@ def discounted_sliding_thompson_sampling_for_sim(bandit_probs, n, df, sw, startp
         else:
             pull(1, bandit_probs, dsts_reward_total, dsts_pulls_total, dsts_full_rec, 'dsts')
 
+        if dsts_pulls_total[0] != 0 and dsts_pulls_total[1] == 0:
+            dsts_false_positive_at_t.append([false_positive(dsts_reward_total, dsts_pulls_total, 0),
+                                            0])
+            dsts_power_at_t.append([false_negative(dsts_full_rec, 0), 0])
+        elif dsts_pulls_total[0] == 0 and dsts_pulls_total[1] != 0:
+            dsts_false_positive_at_t.append([0, false_positive(dsts_reward_total, dsts_pulls_total, 1)])
+            dsts_power_at_t.append([0, false_negative(dsts_full_rec, 1)])
 
-        if dsts_pulls_total[0] != 0 and dsts_pulls_total[1] != 0:
-            dsts_false_positive_at_t.append([false_positive(dsts_reward_total, dsts_pulls_total)[0],
-                                            false_positive(dsts_reward_total, dsts_pulls_total)[1]])
+        elif dsts_pulls_total[0] != 0 and dsts_pulls_total[1] != 0:
+            dsts_false_positive_at_t.append([false_positive(dsts_reward_total, dsts_pulls_total, 0),
+                                             false_positive(dsts_reward_total, dsts_pulls_total, 1)])
             dsts_power_at_t.append([false_negative(dsts_full_rec, 0), false_negative(dsts_full_rec, 1)])
+        else:
+            dsts_false_positive_at_t.append([0, 0])
+            dsts_power_at_t.append([0, 0])
+
+            # false_positive(dsts_reward_total, dsts_pulls_total)[1]
+            # false_negative(dsts_full_rec, 1)
 
     return
 
@@ -313,11 +342,11 @@ def sum(start, end, reward, pull):
     return reward_sum, pull_sum
 
 
-def false_positive (reward, pulls):
-    arm1_fp = (pulls[0]-reward[0]) / pulls[0]
-    arm2_fp = (pulls[1]-reward[1]) / pulls[1]
+def false_positive(reward, pulls, arm):
+    arm_fp = (pulls[arm]-reward[arm]) / pulls[arm]
+    # arm2_fp = (pulls[1]-reward[1]) / pulls[1]
 
-    return arm1_fp, arm2_fp
+    return arm_fp
 
 
 def false_negative(rec, arm):
