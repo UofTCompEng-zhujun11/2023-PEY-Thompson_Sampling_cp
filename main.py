@@ -78,23 +78,19 @@ def discounted_thompson_sampling_for_sim(bandit_probs, n, df, startp=0):
         else:
             pull(1, bandit_probs, records.dts_reward_total, records.dts_pulls_total, records.dts_full_rec, 'dts')
 
-        # if dts_pulls_total[0] != 0 and dts_pulls_total[1] != 0:
-        #     dts_false_positive_at_t.append([false_positive(dts_reward_total, dts_pulls_total, 0),
-        #                                   false_positive(dts_reward_total, dts_pulls_total)[1]])
-        #     dts_power_at_t.append([false_negative(dts_full_rec, 0), false_negative(dts_full_rec, 1)])
         if records.dts_pulls_total[0] != 0 and records.dts_pulls_total[1] == 0:
-            records.dts_false_positive_at_t.append([false_positive(records.dts_reward_total, records.dts_pulls_total, 0),
+            records.dts_false_positive_at_t.append([false_positive(records.dts_reward_total, records.dts_pulls_total, 0, bandit_probs),
                                              0])
-            records.dts_power_at_t.append([false_negative(records.dts_full_rec, 0), 0])
+            records.dts_power_at_t.append([power(records.dts_full_rec, 0, bandit_probs), 0])
 
         elif records.dts_pulls_total[0] == 0 and records.dts_pulls_total[1] != 0:
-            records.dts_false_positive_at_t.append([0, false_positive(records.dts_reward_total, records.dts_pulls_total, 1)])
-            records.dts_power_at_t.append([0, false_negative(records.dts_full_rec, 1)])
+            records.dts_false_positive_at_t.append([0, false_positive(records.dts_reward_total, records.dts_pulls_total, 1, bandit_probs)])
+            records.dts_power_at_t.append([0, power(records.dts_full_rec, 1, bandit_probs)])
 
         elif records.dsts_pulls_total[0] != 0 and records.dts_pulls_total[1] != 0:
-            records.dts_false_positive_at_t.append([false_positive(records.dts_reward_total, records.dts_pulls_total, 0),
+            records.dts_false_positive_at_t.append([false_positive(records.dts_reward_total, records.dts_pulls_total, 0, bandit_probs),
                                              false_positive(records.dts_reward_total, records.dts_pulls_total, 1)])
-            records.dts_power_at_t.append([false_negative(records.dts_full_rec, 0), false_negative(records.dts_full_rec, 1)])
+            records.dts_power_at_t.append([power(records.dts_full_rec, 0, bandit_probs), power(records.dts_full_rec, 1, bandit_probs)])
         else:
             records.dts_false_positive_at_t.append([0, 0])
             records.dts_power_at_t.append([0, 0])
@@ -113,7 +109,6 @@ def discounted_sliding_thompson_sampling(bandit_probs, n, df, sw, startp=0):
     return nothing
     """
 
-    # global dsts_reward_rec, dsts_pulls_rec, dsts_reward_total, dsts_pulls_total
     global records
 
     # Picking arms, alter probability measure based on how old the info is
@@ -221,17 +216,17 @@ def discounted_sliding_thompson_sampling_for_sim(bandit_probs, n, df, sw, startp
             pull(1, bandit_probs, records.dsts_reward_total, records.dsts_pulls_total, records.dsts_full_rec, 'dsts')
 
         if records.dsts_pulls_total[0] != 0 and records.dsts_pulls_total[1] == 0:
-            records.dsts_false_positive_at_t.append([false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0),
+            records.dsts_false_positive_at_t.append([false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0, bandit_probs),
                                             0])
-            records.dsts_power_at_t.append([false_negative(records.dsts_full_rec, 0), 0])
+            records.dsts_power_at_t.append([power(records.dsts_full_rec, 0, bandit_probs), 0])
         elif records.dsts_pulls_total[0] == 0 and records.dsts_pulls_total[1] != 0:
-            records.dsts_false_positive_at_t.append([0, false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1)])
-            records.dsts_power_at_t.append([0, false_negative(records.dsts_full_rec, 1)])
+            records.dsts_false_positive_at_t.append([0, false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1, bandit_probs)])
+            records.dsts_power_at_t.append([0, power(records.dsts_full_rec, 1, bandit_probs)])
 
         elif records.dsts_pulls_total[0] != 0 and records.dsts_pulls_total[1] != 0:
-            records.dsts_false_positive_at_t.append([false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0),
-                                             false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1)])
-            records.dsts_power_at_t.append([false_negative(records.dsts_full_rec, 0), false_negative(records.dsts_full_rec, 1)])
+            records.dsts_false_positive_at_t.append([false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0, bandit_probs),
+                                             false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1, bandit_probs)])
+            records.dsts_power_at_t.append([power(records.dsts_full_rec, 0, bandit_probs), power(records.dsts_full_rec, 1, bandit_probs)])
         else:
             records.dsts_false_positive_at_t.append([0, 0])
             records.dsts_power_at_t.append([0, 0])

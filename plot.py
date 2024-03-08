@@ -3,6 +3,7 @@ import Simulation
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # Functions to compute the criteria
 def retrieve_reward_at_t(info, arm):
     accumulated_rew = 0
@@ -55,7 +56,7 @@ def put_tgt(prop):
 def plot_result(x, y, title, x_lab, y_lab, to_be_plot):
     counter = 0
     for i in y:
-        plt.plot(x, i, label=str(to_be_plot) + " for arm " + str(counter % 2 + 1) + " " +("dts" if counter < 2 else "dsts"))
+        plt.plot(x, i, label=str(to_be_plot) + " for arm " + str(counter % 2 + 1) + " " + ("dts" if counter < 2 else "dsts"))
         counter += 1
 
     plt.title(title)
@@ -71,11 +72,11 @@ def constructPlot():
     # Best arm remains unchanged, but continue to increase in mean reward
     Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dsts', 5)
     Simulation.simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dts')
-    
+
     y = put_tgt('fp')
     plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
             'Time Steps', 'False Positive Rates', 'False Positive Rates')
-    
+
     records.clearData()
     # Best arm continue to increase in mean reward
     Simulation.simulation_vary_one([0.5, 0.9], 0.8, 500, 3, -0.02, 'dsts', 5)
@@ -84,7 +85,7 @@ def constructPlot():
     y = put_tgt('fp')
     plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
             'Time Steps', 'False Positive Rates', 'False Positive Rates')
-    
+
     return
 
 constructPlot()
