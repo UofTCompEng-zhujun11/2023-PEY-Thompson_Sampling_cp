@@ -89,7 +89,7 @@ def discounted_thompson_sampling_for_sim(bandit_probs, n, df, startp=0):
 
         elif records.dsts_pulls_total[0] != 0 and records.dts_pulls_total[1] != 0:
             records.dts_false_positive_at_t.append([false_positive(records.dts_reward_total, records.dts_pulls_total, 0, bandit_probs),
-                                             false_positive(records.dts_reward_total, records.dts_pulls_total, 1)])
+                                             false_positive(records.dts_reward_total, records.dts_pulls_total, 1, bandit_probs)])
             records.dts_power_at_t.append([power(records.dts_full_rec, 0, bandit_probs), power(records.dts_full_rec, 1, bandit_probs)])
         else:
             records.dts_false_positive_at_t.append([0, 0])

@@ -26,11 +26,11 @@ def simulation_vary_one(arm_prob, df, sim_per_interval, interval, change_by, alg
             sim_result.append([arm1_mean, arm2_mean])
 
             criteria.append([main.false_positive(records.dts_reward_total,
-                                                 records.dts_pulls_total, 0),
+                                                 records.dts_pulls_total, 0, arm_prob),
                              main.false_positive(records.dts_reward_total,
-                                                 records.dts_pulls_total, 1),
-                             main.false_negative(records.dts_full_rec, 0),
-                             main.false_negative(records.dts_full_rec, 1),
+                                                 records.dts_pulls_total, 1, arm_prob),
+                             main.power(records.dts_full_rec, 0, arm_prob),
+                             main.power(records.dts_full_rec, 1, arm_prob),
                              records.dts_reward_total[0], records.dts_reward_total[1]])
 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
@@ -38,11 +38,11 @@ def simulation_vary_one(arm_prob, df, sim_per_interval, interval, change_by, alg
             print(f' Arm 1 Reward = {records.dts_reward_total[0]},'
                   f' Arm 2 Reward = {records.dts_reward_total[1]} ')
 
-            print(f' Arm 1 Power = {main.false_negative(records.dts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dts_full_rec, 1)} ')
+            print(f' Arm 1 Power = {main.power(records.dts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dts_full_rec, 1, arm_prob)} ')
 
-            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, 0)},'
-                  f' Arm 2 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, 1)} ')
+            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, 0, arm_prob)},'
+                  f' Arm 2 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, 1, arm_prob)} ')
 
         else:
             if change_by > 0:
@@ -60,11 +60,11 @@ def simulation_vary_one(arm_prob, df, sim_per_interval, interval, change_by, alg
             sim_result.append([arm1_mean, arm2_mean])
 
             criteria.append([main.false_positive(records.dsts_reward_total,
-                                                 records.dsts_pulls_total, 0),
+                                                 records.dsts_pulls_total, 0, arm_prob),
                              main.false_positive(records.dsts_reward_total,
-                                                 records.dsts_pulls_total, 1),
-                             main.false_negative(records.dsts_full_rec, 0),
-                             main.false_negative(records.dsts_full_rec, 1),
+                                                 records.dsts_pulls_total, 1, arm_prob),
+                             main.power(records.dsts_full_rec, 0, arm_prob),
+                             main.power(records.dsts_full_rec, 1, arm_prob),
                              records.dts_reward_total[0], records.dts_reward_total[1]])
 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
@@ -72,10 +72,10 @@ def simulation_vary_one(arm_prob, df, sim_per_interval, interval, change_by, alg
             print(f' Arm 1 Reward = {records.dsts_reward_total[0]},'
                   f' Arm 2 Reward = {records.dsts_reward_total[1]} ')
 
-            print(f' Arm 1 Power = {main.false_negative(records.dsts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dsts_full_rec, 1)} ')
-            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0)},'
-                  f' Arm 2 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1)} ')
+            print(f' Arm 1 Power = {main.power(records.dsts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dsts_full_rec, 1, arm_prob)} ')
+            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, 0, arm_prob)},'
+                  f' Arm 2 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, 1, arm_prob)} ')
 
     return sim_result, criteria
 
@@ -101,9 +101,9 @@ def simulation_vary_both(arm_prob, df, sim_per_interval, interval, change_by, al
             sim_result.append([arm1_mean, arm2_mean])
 
             criteria.append([main.false_positive(records.dts_reward_total,
-                                                 records.dts_pulls_total),
-                             main.false_negative(records.dts_full_rec, 0),
-                             main.false_negative(records.dts_full_rec, 1),
+                                                 records.dts_pulls_total, arm_prob),
+                             main.power(records.dts_full_rec, 0, arm_prob),
+                             main.power(records.dts_full_rec, 1, arm_prob),
                              records.dts_reward_total[0], records.dts_reward_total[1]])
 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
@@ -111,10 +111,10 @@ def simulation_vary_both(arm_prob, df, sim_per_interval, interval, change_by, al
             print(f' Arm 1 Reward = {records.dts_reward_total[0]},'
                   f' Arm 2 Reward = {records.dts_reward_total[1]} ')
 
-            print(f' Arm 1 Power = {main.false_negative(records.dts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dts_full_rec, 1)} ')
-            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total)[0]},'
-                  f' Arm 2 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total)[1]} ')
+            print(f' Arm 1 Power = {main.power(records.dts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dts_full_rec, 1, arm_prob)} ')
+            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, arm_prob)[0]},'
+                  f' Arm 2 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total, arm_prob)[1]} ')
 
         else:
             if change_by > 0:
@@ -133,18 +133,18 @@ def simulation_vary_both(arm_prob, df, sim_per_interval, interval, change_by, al
 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
             criteria.append([main.false_positive(records.dsts_reward_total,
-                                                 records.dsts_pulls_total),
-                             main.false_negative(records.dsts_full_rec, 0),
-                             main.false_negative(records.dsts_full_rec, 1),
+                                                 records.dsts_pulls_total, arm_prob),
+                             main.power(records.dsts_full_rec, 0, arm_prob),
+                             main.power(records.dsts_full_rec, 1, arm_prob),
                              records.dsts_reward_total[0], records.dsts_reward_total[1]])
 
             print(f' Arm 1 Reward = {records.dsts_reward_total[0]},'
                   f' Arm 2 Reward = {records.dsts_reward_total[1]} ')
 
-            print(f' Arm 1 Power = {main.false_negative(records.dsts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dsts_full_rec, 1)} ')
-            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total)[0]},'
-                  f' Arm 2 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total)[1]} ')
+            print(f' Arm 1 Power = {main.power(records.dsts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dsts_full_rec, 1, arm_prob)} ')
+            print(f' Arm 1 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, arm_prob)[0]},'
+                  f' Arm 2 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total, arm_prob)[1]} ')
 
     return sim_result, criteria
 
@@ -167,11 +167,11 @@ def simulation_vary_both_random(arm_prob, df, sim_per_interval, interval, func, 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
             criteria.append([main.false_positive(records.dts_reward_total,
                                                  records.dts_pulls_total),
-                             main.false_negative(records.dts_full_rec, 0),
-                             main.false_negative(records.dts_full_rec, 1)])
+                             main.power(records.dts_full_rec, 0, arm_prob),
+                             main.power(records.dts_full_rec, 1, arm_prob)])
 
-            print(f' Arm 1 Power = {main.false_negative(records.dts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dts_full_rec, 1)} ')
+            print(f' Arm 1 Power = {main.power(records.dts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dts_full_rec, 1, arm_prob)} ')
             print(f' Arm 1 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total)[0]},'
                   f' Arm 2 False Positive Rates = {main.false_positive(records.dts_reward_total, records.dts_pulls_total)[1]} ')
 
@@ -189,20 +189,15 @@ def simulation_vary_both_random(arm_prob, df, sim_per_interval, interval, func, 
             print(f' Arm 1 Mean = {arm1_mean}, Arm 2 Mean = {arm2_mean}')
             criteria.append([main.false_positive(records.dsts_reward_total,
                                                  records.dsts_pulls_total),
-                             main.false_negative(records.dsts_full_rec, 0),
-                             main.false_negative(records.dsts_full_rec, 1)])
+                             main.power(records.dsts_full_rec, 0, arm_prob),
+                             main.power(records.dsts_full_rec, 1, arm_prob)])
 
-            print(f' Arm 1 Power = {main.false_negative(records.dsts_full_rec, 0)},'
-                  f' Arm 2 Power = {main.false_negative(records.dsts_full_rec, 1)} ')
+            print(f' Arm 1 Power = {main.power(records.dsts_full_rec, 0, arm_prob)},'
+                  f' Arm 2 Power = {main.power(records.dsts_full_rec, 1, arm_prob)} ')
             print(f' Arm 1 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total)[0]},'
                   f' Arm 2 False Positive Rates = {main.false_positive(records.dsts_reward_total, records.dsts_pulls_total)[1]} ')
 
     return sim_result, criteria
-
-
-
-
-
 
 
 # simulation_vary_one([0.3, 0.4], 0.8, 500, 3, 0.02, 'dsts', 5)
