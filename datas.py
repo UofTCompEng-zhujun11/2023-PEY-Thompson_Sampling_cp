@@ -85,6 +85,8 @@ class sim:
         self.numArms            = numArms
         self.wald_stats_FPR     = []
         self.wald_reject_FPR    = []
+        self.wald_stats_power   = []
+        self.wald_reject_power  = []
 
 
     def set_bandit_probs(self, probs) -> None:

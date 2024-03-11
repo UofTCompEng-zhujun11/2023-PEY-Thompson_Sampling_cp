@@ -41,6 +41,7 @@ def simulation_fixed_vary(bandit_probs, df, sw = None):
             discounted_sliding_thompson_sampling(varied_probs, config.sim_per_interval, df, sw, (config.sim_per_interval*i))
 
     fpr(config.alg)
+
     return
 
 def simulation_rand_vary(bandit_probs, df, sw = None):
@@ -98,8 +99,32 @@ def fpr(alg):
     reject = abs(wald_stat) > 1.96
     sim_data.wald_reject_FPR.append(reject)
 
-def power():
+def power(alg):
     global sim_data
+
+    if alg == 'dts':
+        data = dts_alg_data
+    else:
+        data = dsts_alg_data
+
+    p_hat_list = p_hat(data)
+    p_hat_diff = p_hat_list[0] - 0.5
+
+    var_1 = (p_hat_list[0] * (1 - p_hat_list[0])) / (data.arms[0].total_pull - 1)
+    var_2 = (p_hat_list[1] * (1 - p_hat_list[1])) / (data.arms[1].total_pull - 1)
+
+    sd = np.sqrt(var_1 + var_2)
+
+    wald_stat = p_hat_diff/sd
+    sim_data.wald_stats_power.append(wald_stat)
+
+    reject = abs(wald_stat) > 1.96
+    sim_data.wald_reject_power.append(reject)
+
+
+    
+
+
 
     
 def megasim(mega_trail, bandit_probs, df, sw = None):
