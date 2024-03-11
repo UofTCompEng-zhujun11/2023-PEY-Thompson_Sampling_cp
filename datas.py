@@ -80,9 +80,7 @@ class TimeSteps:
 
 class sim:
     
-    def __init__(self, numArms) -> None:
-        self.bandit_probs       = None
-        self.numArms            = numArms
+    def __init__(self) -> None:
         self.wald_stats_FPR     = []
         self.wald_reject_FPR    = []
         self.wald_stats_power   = []
@@ -90,11 +88,27 @@ class sim:
         self.overall_power      = []
         self.overall_FPR        = []
 
+    def set_overall(self) -> float:
+        self.overall_FPR.append(sum(self.wald_reject_FPR)/len(self.wald_reject_FPR)) 
+        self.overall_power.append(sum(self.wald_reject_power)/len(self.wald_reject_power))
+
+
+class simConfig:
+    
+    def __init__(self, numArms) -> None:
+        self.isFixed            = False
+        self.isvary_all         = False
+        self.change_by          = None
+        self.sim_per_interval   = None
+        self.interval           = None
+        self.alg                = ""
+
+        self.bandit_probs       = None
+        self.numArms            = numArms
 
     def set_bandit_probs(self, probs) -> None:
         self.bandit_probs = probs
-        assert(len(probs) == self.numArms)
-        
+        assert(len(probs) == self.numArms) 
 
     def get_vary_one_probs(self, amount) -> list:
         varied_probs = self.bandit_probs
@@ -116,11 +130,4 @@ class sim:
             varied_probs.append(result)
 
         return varied_probs
-    
-
-    def set_overall(self) -> float:
-        self.overall_FPR.append(sum(self.wald_reject_FPR)/len(self.wald_reject_FPR)) 
-        self.overall_power.append(sum(self.wald_reject_power)/len(self.wald_reject_power))
-        
-
 

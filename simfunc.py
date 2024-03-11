@@ -3,6 +3,7 @@ from algrithms import discounted_thompson_sampling
 from algrithms import discounted_sliding_thompson_sampling
 from algrithms import dts_alg_data
 from algrithms import dsts_alg_data
+from datas import simConfig
 from datas import sim
 from datas import TimeSteps
 import numpy as np
@@ -10,29 +11,19 @@ import random
 from datetime import datetime
 
 random.seed(datetime.now().timestamp())
-sim_data = sim(NUM_ARMS)
-
-class simConfig:
-    
-    def __init__(self) -> None:
-        self.isFixed            = False
-        self.isvary_all         = False
-        self.change_by          = None
-        self.sim_per_interval   = None
-        self.interval           = None
-        self.alg                = ""
-
-config = simConfig()
+dts_sim_data = sim()
+dsts_sim_data = sim()
+config = simConfig(NUM_ARMS)
 
 def simulation_fixed_vary(bandit_probs, df, sw = None):
-    global sim_data, config
+    global config
 
-    sim_data.set_bandit_probs(bandit_probs)
+    config.set_bandit_probs(bandit_probs)
     for i in range(config.interval):
         if config.isvary_all:
-            varied_probs = sim_data.get_vary_all_probs(config.change_by * i)
+            varied_probs = config.get_vary_all_probs(config.change_by * i)
         else:
-            varied_probs = sim_data.get_vary_one_probs(config.change_by * i)
+            varied_probs = config.get_vary_one_probs(config.change_by * i)
         
         if config.alg == 'dts':
             discounted_thompson_sampling(varied_probs, config.sim_per_interval, df, (config.sim_per_interval*i))
@@ -45,15 +36,15 @@ def simulation_fixed_vary(bandit_probs, df, sw = None):
     return
 
 def simulation_rand_vary(bandit_probs, df, sw = None):
-    global sim_data, config
+    global config
 
-    sim_data.set_bandit_probs(bandit_probs)
+    config.set_bandit_probs(bandit_probs)
     for i in range(config.interval):
         change_by = random.random()
         if config.isvary_all:
-            varied_probs = sim_data.get_vary_all_probs(change_by)
+            varied_probs = config.get_vary_all_probs(change_by)
         else:
-            varied_probs = sim_data.get_vary_one_probs(change_by)
+            varied_probs = config.get_vary_one_probs(change_by)
         
         if config.alg == 'dts':
             discounted_thompson_sampling(varied_probs, config.sim_per_interval, df, (config.sim_per_interval*i))
@@ -75,12 +66,14 @@ def p_hat(alg_data:TimeSteps):
     return p_hat
 
 def fpr(alg):
-    global sim_data
+    global dts_sim_data, dsts_alg_data
 
     if alg == 'dts':
         alg_data = dts_alg_data
+        sim_data = dts_sim_data
     else:
         alg_data = dsts_alg_data
+        sim_data = dsts_alg_data
 
     p_hat_list = []
     p_hat_list = p_hat(alg_data)
@@ -101,18 +94,20 @@ def fpr(alg):
     sim_data.wald_reject_FPR.append(reject)
 
 def power(alg):
-    global sim_data
+    global dts_sim_data, dsts_alg_data
 
     if alg == 'dts':
-        data = dts_alg_data
+        alg_data = dts_alg_data
+        sim_data = dts_sim_data
     else:
-        data = dsts_alg_data
+        alg_data = dsts_alg_data
+        sim_data = dsts_alg_data
 
-    p_hat_list = p_hat(data)
+    p_hat_list = p_hat(alg_data)
     p_hat_diff = p_hat_list[0] - 0.5
 
-    var_1 = (p_hat_list[0] * (1 - p_hat_list[0])) / (data.arms[0].total_pull - 1)
-    var_2 = (p_hat_list[1] * (1 - p_hat_list[1])) / (data.arms[1].total_pull - 1)
+    var_1 = (p_hat_list[0] * (1 - p_hat_list[0])) / (alg_data.arms[0].total_pull - 1)
+    var_2 = (p_hat_list[1] * (1 - p_hat_list[1])) / (alg_data.arms[1].total_pull - 1)
 
     sd = np.sqrt(var_1 + var_2)
 
@@ -124,7 +119,12 @@ def power(alg):
 
     
 def megasim(mega_trail, bandit_probs, df, sw = None):
-    global config, sim_data
+    global config, dts_sim_data, dsts_alg_data
+
+    if config.alg == 'dts':
+        sim_data = dts_sim_data
+    else:
+        sim_data = dsts_alg_data
 
     for i in range(mega_trail):
         if config.isFixed:
@@ -134,12 +134,3 @@ def megasim(mega_trail, bandit_probs, df, sw = None):
         sim_data.set_overall()
 
     return
-
-config.alg = "dts"
-config.isFixed = True
-config.interval = 3
-config.sim_per_interval = 500
-config.change_by = 0.02
-config.isvary_all = False
-
-megasim(1000, [0.6, 0.65], 0.8)
