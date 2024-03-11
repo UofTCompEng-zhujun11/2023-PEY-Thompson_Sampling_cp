@@ -4,36 +4,72 @@ from algrithms import discounted_sliding_thompson_sampling
 from algrithms import dts_alg_data
 from algrithms import dsts_alg_data
 from datas import sim
+from datas import TimeSteps
 import numpy as np
+import random
+from datetime import datetime
 
+random.seed(datetime.now().timestamp())
 sim_data = sim(NUM_ARMS)
 
-def simulation(vary_all, bandit_probs, df, sim_per_interval, interval, change_by, alg, sw = None):
-    global sim_data
+class simConfig:
+    
+    def __init__(self) -> None:
+        self.isFixed            = False
+        self.isvary_all         = False
+        self.change_by          = None
+        self.sim_per_interval   = None
+        self.interval           = None
+        self.alg                = ""
+
+config = simConfig()
+
+def simulation_fixed_vary(bandit_probs, df, sw = None):
+    global sim_data, config
 
     sim_data.set_bandit_probs(bandit_probs)
-    for i in range(interval):
-        if vary_all:
-            varied_probs = sim_data.get_vary_all_probs(change_by * i)
+    for i in range(config.interval):
+        if config.isvary_all:
+            varied_probs = sim_data.get_vary_all_probs(config.change_by * i)
         else:
-            varied_probs = sim_data.get_vary_one_probs(change_by * i)
+            varied_probs = sim_data.get_vary_one_probs(config.change_by * i)
         
-        if alg == 'dts':
-            discounted_thompson_sampling(varied_probs, sim_per_interval, df, (sim_per_interval*i))
+        if config.alg == 'dts':
+            discounted_thompson_sampling(varied_probs, config.sim_per_interval, df, (config.sim_per_interval*i))
 
         else:
-            discounted_sliding_thompson_sampling(varied_probs, sim_per_interval, df, sw, (sim_per_interval*i))
+            discounted_sliding_thompson_sampling(varied_probs, config.sim_per_interval, df, sw, (config.sim_per_interval*i))
 
-    fpr('dts')
-    fpr('dsts')
+    fpr(config.alg)
+
     return
 
-def p_hat():
+def simulation_rand_vary(bandit_probs, df, sw = None):
+    global sim_data, config
+
+    sim_data.set_bandit_probs(bandit_probs)
+    for i in range(config.interval):
+        change_by = random.random()
+        if config.isvary_all:
+            varied_probs = sim_data.get_vary_all_probs(change_by)
+        else:
+            varied_probs = sim_data.get_vary_one_probs(change_by)
+        
+        if config.alg == 'dts':
+            discounted_thompson_sampling(varied_probs, config.sim_per_interval, df, (config.sim_per_interval*i))
+
+        else:
+            discounted_sliding_thompson_sampling(varied_probs, config.sim_per_interval, df, sw, (config.sim_per_interval*i))
+
+    fpr(config.alg)
+    return
+
+def p_hat(alg_data:TimeSteps):
     p_hat = []
 
     for index in range(NUM_ARMS):
-        num_pulls = len(dts_alg_data.arms[index].pull_record)
-        p_hat.append(dts_alg_data.arms[index].total_pull/num_pulls)
+        num_trails = alg_data.get_num_trails()
+        p_hat.append(alg_data.arms[index].total_pull/num_trails)
 
     return p_hat
 
@@ -41,19 +77,19 @@ def fpr(alg):
     global sim_data
 
     if alg == 'dts':
-        data = dts_alg_data
+        alg_data = dts_alg_data
     else:
-        data = dsts_alg_data
+        alg_data = dsts_alg_data
 
-    p_hat_list = p_hat()
+    p_hat_list = []
+    p_hat_list = p_hat(alg_data)
     p_hat_diff = p_hat_list[0] - p_hat_list[1]
     hyp_prob = 0.5*0.5
-
-    num_pulls = []
+    arm_total_pull = []
     for index in range(NUM_ARMS):
-        num_pulls.append(len(data.arms[index].pull_record))
+        arm_total_pull.append(alg_data.arms[index].total_pull)
 
-    arm_total_trials = (1/(num_pulls[0]) - 1)*(1/(num_pulls[1]) - 1)
+    arm_total_trials = (1/(arm_total_pull[0]) - 1)*(1/(arm_total_pull[1]) - 1)
 
     sd = np.sqrt(hyp_prob * arm_total_trials)
 
@@ -91,7 +127,12 @@ def power(alg):
 
 
     
+def megasim(mega_trail, bandit_probs, df, sw = None):
+    global config
 
+    for i in range(mega_trail):
+        if config.isFixed:
+            simulation_fixed_vary(bandit_probs, df, sw)
+        else:
+            simulation_rand_vary(bandit_probs, df, sw)
 
-simulation(True, [0.65, 0.7], 0.8, 500, 3, -0.2, 'dts')
-simulation(True, [0.3, 0.7], 0.8, 500, 3, 0.08, 'dsts', sw=10)
