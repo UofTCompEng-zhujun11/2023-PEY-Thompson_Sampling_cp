@@ -26,6 +26,13 @@ class arm:
         else:
             self.reward_record.append(0)
 
+    def clear_data(self):
+        self.total_pull = 0
+        self.total_reward = 0
+        self.pull_record.clear()
+        self.reward_record.clear()
+    
+
 
 
 class TimeSteps:
@@ -76,6 +83,11 @@ class TimeSteps:
     
     def get_num_trails(self):
         return len(self.arms[0].pull_record)
+    
+    def clear_data(self):
+        for arm in self.arms:
+            arm.clear_data()
+    
 
 
 class sim:

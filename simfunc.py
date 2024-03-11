@@ -33,6 +33,10 @@ def simulation_fixed_vary(bandit_probs, df, sw = None):
 
     fpr(config.alg)
     power(config.alg)
+
+    dts_alg_data.clear_data()
+    dsts_alg_data.clear_data()
+    
     return
 
 def simulation_rand_vary(bandit_probs, df, sw = None):
@@ -54,6 +58,10 @@ def simulation_rand_vary(bandit_probs, df, sw = None):
 
     fpr(config.alg)
     power(config.alg)
+
+    dts_alg_data.clear_data()
+    dsts_alg_data.clear_data()
+    
     return
 
 def p_hat(alg_data:TimeSteps):
