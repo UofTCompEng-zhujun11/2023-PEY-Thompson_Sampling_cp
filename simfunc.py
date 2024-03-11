@@ -41,7 +41,7 @@ def simulation_fixed_vary(bandit_probs, df, sw = None):
             discounted_sliding_thompson_sampling(varied_probs, config.sim_per_interval, df, sw, (config.sim_per_interval*i))
 
     fpr(config.alg)
-
+    power(config.alg)
     return
 
 def simulation_rand_vary(bandit_probs, df, sw = None):
@@ -62,6 +62,7 @@ def simulation_rand_vary(bandit_probs, df, sw = None):
             discounted_sliding_thompson_sampling(varied_probs, config.sim_per_interval, df, sw, (config.sim_per_interval*i))
 
     fpr(config.alg)
+    power(config.alg)
     return
 
 def p_hat(alg_data:TimeSteps):
@@ -121,18 +122,24 @@ def power(alg):
     reject = abs(wald_stat) > 1.96
     sim_data.wald_reject_power.append(reject)
 
-
-    
-
-
-
     
 def megasim(mega_trail, bandit_probs, df, sw = None):
-    global config
+    global config, sim_data
 
     for i in range(mega_trail):
         if config.isFixed:
             simulation_fixed_vary(bandit_probs, df, sw)
         else:
             simulation_rand_vary(bandit_probs, df, sw)
+        sim_data.set_overall()
 
+    return
+
+config.alg = "dts"
+config.isFixed = True
+config.interval = 3
+config.sim_per_interval = 500
+config.change_by = 0.02
+config.isvary_all = False
+
+megasim(1000, [0.6, 0.65], 0.8)

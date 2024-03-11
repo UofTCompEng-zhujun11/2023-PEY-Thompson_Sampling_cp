@@ -87,6 +87,8 @@ class sim:
         self.wald_reject_FPR    = []
         self.wald_stats_power   = []
         self.wald_reject_power  = []
+        self.overall_power      = []
+        self.overall_FPR        = []
 
 
     def set_bandit_probs(self, probs) -> None:
@@ -114,5 +116,11 @@ class sim:
             varied_probs.append(result)
 
         return varied_probs
+    
+
+    def set_overall(self) -> float:
+        self.overall_FPR.append(sum(self.wald_reject_FPR)/len(self.wald_reject_FPR)) 
+        self.overall_power.append(sum(self.wald_reject_power)/len(self.wald_reject_power))
+        
 
 
