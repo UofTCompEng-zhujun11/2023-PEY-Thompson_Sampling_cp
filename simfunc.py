@@ -24,7 +24,8 @@ def simulation(vary_all, bandit_probs, df, sim_per_interval, interval, change_by
         else:
             discounted_sliding_thompson_sampling(varied_probs, sim_per_interval, df, sw, (sim_per_interval*i))
 
-    fpr()
+    fpr('dts')
+    fpr('dsts')
     return
 
 def p_hat():
@@ -36,15 +37,21 @@ def p_hat():
 
     return p_hat
 
-def fpr():
+def fpr(alg):
     global sim_data
+
+    if alg == 'dts':
+        data = dts_alg_data
+    else:
+        data = dsts_alg_data
 
     p_hat_list = p_hat()
     p_hat_diff = p_hat_list[0] - p_hat_list[1]
     hyp_prob = 0.5*0.5
+
     num_pulls = []
     for index in range(NUM_ARMS):
-        num_pulls.append(len(dts_alg_data.arms[index].pull_record))
+        num_pulls.append(len(data.arms[index].pull_record))
 
     arm_total_trials = (1/(num_pulls[0]) - 1)*(1/(num_pulls[1]) - 1)
 
@@ -56,8 +63,32 @@ def fpr():
     reject = abs(wald_stat) > 1.96
     sim_data.wald_reject_FPR.append(reject)
 
-def power():
+def power(alg):
     global sim_data
+
+    if alg == 'dts':
+        data = dts_alg_data
+    else:
+        data = dsts_alg_data
+
+    p_hat_list = p_hat(data)
+    p_hat_diff = p_hat_list[0] - 0.5
+
+    var_1 = (p_hat_list[0] * (1 - p_hat_list[0])) / (data.arms[0].total_pull - 1)
+    var_2 = (p_hat_list[1] * (1 - p_hat_list[1])) / (data.arms[1].total_pull - 1)
+
+    sd = np.sqrt(var_1 + var_2)
+
+    wald_stat = p_hat_diff/sd
+    sim_data.wald_stats_power.append(wald_stat)
+
+    reject = abs(wald_stat) > 1.96
+    sim_data.wald_reject_power.append(reject)
+
+
+    
+
+
 
     
 
