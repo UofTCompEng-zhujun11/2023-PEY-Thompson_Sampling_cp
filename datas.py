@@ -73,6 +73,9 @@ class TimeSteps:
             hot_total_reward += self.arms[arm_index].reward_record[steps]
 
         return hot_total_pull, hot_total_reward
+    
+    def get_num_trails(self):
+        return len(self.arms[0].pull_record)
 
 
 class sim:
