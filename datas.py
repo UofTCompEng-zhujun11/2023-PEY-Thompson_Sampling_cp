@@ -99,6 +99,7 @@ class sim:
         self.wald_reject_power  = []
         self.overall_power      = []
         self.overall_FPR        = []
+        self.reward_ref         = []
 
     def set_overall(self) -> float:
         self.overall_FPR.append(sum(self.wald_reject_FPR)/len(self.wald_reject_FPR)) 
@@ -116,25 +117,20 @@ class simConfig:
         self.alg                = ""
 
         self.bandit_probs       = None
-        self.numArms            = numArms
-
-    def set_bandit_probs(self, probs) -> None:
-        self.bandit_probs = probs
-        assert(len(probs) == self.numArms) 
 
     def get_vary_one_probs(self, amount) -> list:
-        varied_probs = self.bandit_probs
+        varied_probs = list(self.bandit_probs)
         if amount > 0:
-            result = min(self.bandit_probs[self.numArms - 1] + amount, 0.9999)
+            result = min(self.bandit_probs[len(self.bandit_probs) - 1] + amount, 0.9999)
         else:
-            result = max(self.bandit_probs[self.numArms - 1] + amount, 0.0001)
-        varied_probs[self.numArms - 1] = result
+            result = max(self.bandit_probs[len(self.bandit_probs) - 1] + amount, 0.0001)
+        varied_probs[len(self.bandit_probs) - 1] = result
         return varied_probs
     
 
     def get_vary_all_probs(self, amount) -> list:
         varied_probs = list()
-        for index in range(self.numArms):
+        for index in range(len(self.bandit_probs)):
             if amount > 0:
                 result = min(self.bandit_probs[index] + amount, 0.9999)
             else:

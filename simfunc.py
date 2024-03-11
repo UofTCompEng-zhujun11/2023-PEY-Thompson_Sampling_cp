@@ -15,10 +15,9 @@ dts_sim_data = sim()
 dsts_sim_data = sim()
 config = simConfig(NUM_ARMS)
 
-def simulation_fixed_vary(bandit_probs, df, sw = None):
+def simulation_fixed_vary(df, sw = None):
     global config
 
-    config.set_bandit_probs(bandit_probs)
     for i in range(config.interval):
         if config.isvary_all:
             varied_probs = config.get_vary_all_probs(config.change_by * i)
@@ -33,16 +32,12 @@ def simulation_fixed_vary(bandit_probs, df, sw = None):
 
     fpr(config.alg)
     power(config.alg)
-
-    dts_alg_data.clear_data()
-    dsts_alg_data.clear_data()
     
     return
 
-def simulation_rand_vary(bandit_probs, df, sw = None):
+def simulation_rand_vary(df, sw = None):
     global config
 
-    config.set_bandit_probs(bandit_probs)
     for i in range(config.interval):
         change_by = random.random()
         if config.isvary_all:
@@ -58,9 +53,6 @@ def simulation_rand_vary(bandit_probs, df, sw = None):
 
     fpr(config.alg)
     power(config.alg)
-
-    dts_alg_data.clear_data()
-    dsts_alg_data.clear_data()
     
     return
 
@@ -81,7 +73,7 @@ def fpr(alg):
         sim_data = dts_sim_data
     else:
         alg_data = dsts_alg_data
-        sim_data = dsts_alg_data
+        sim_data = dsts_sim_data
 
     p_hat_list = []
     p_hat_list = p_hat(alg_data)
@@ -109,7 +101,7 @@ def power(alg):
         sim_data = dts_sim_data
     else:
         alg_data = dsts_alg_data
-        sim_data = dsts_alg_data
+        sim_data = dsts_sim_data
 
     p_hat_list = p_hat(alg_data)
     p_hat_diff = p_hat_list[0] - 0.5
@@ -126,19 +118,26 @@ def power(alg):
     sim_data.wald_reject_power.append(reject)
 
     
-def megasim(mega_trail, bandit_probs, df, sw = None):
-    global config, dts_sim_data, dsts_alg_data
+def megasim(mega_trail, df, sw = None):
+    global config, dts_sim_data, dsts_alg_data, dts_alg_data
 
     if config.alg == 'dts':
+        alg_data = dts_alg_data
         sim_data = dts_sim_data
     else:
-        sim_data = dsts_alg_data
+        alg_data = dsts_alg_data
+        sim_data = dsts_sim_data
+
 
     for i in range(mega_trail):
         if config.isFixed:
-            simulation_fixed_vary(bandit_probs, df, sw)
+            simulation_fixed_vary(df, sw)
         else:
-            simulation_rand_vary(bandit_probs, df, sw)
+            simulation_rand_vary(df, sw)
+        if i == mega_trail - 1:
+            sim_data.reward_ref = list(alg_data.arms[1].reward_record)
+        dts_alg_data.clear_data()
+        dsts_alg_data.clear_data()
         sim_data.set_overall()
 
     return

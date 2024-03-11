@@ -2,8 +2,6 @@ from simfunc import dts_sim_data
 from simfunc import dsts_sim_data
 from simfunc import config
 from simfunc import megasim
-from algrithms import dts_alg_data
-from algrithms import dsts_alg_data
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -20,8 +18,8 @@ def retrieve_reward_at_t(info):
 
 def compile_info (criteria):
     if criteria == 'reward':
-        result_dts = retrieve_reward_at_t(dts_alg_data.arms[1].reward_record)
-        result_dsts = retrieve_reward_at_t(dsts_alg_data.arms[1].reward_record)
+        result_dts = retrieve_reward_at_t(dts_sim_data.reward_ref)
+        result_dsts = retrieve_reward_at_t(dsts_sim_data.reward_ref)
     elif criteria == 'power':
         result_dts = dts_sim_data.overall_power
         result_dsts = dsts_sim_data.overall_power
@@ -51,11 +49,14 @@ def constructPlot():
     config.sim_per_interval = 500
     config.change_by = 0.02
     config.isvary_all = False
+    config.bandit_probs = [0.6, 0.5]
 
-    megasim(1000, [0.6, 0.65], 0.8)
+    megasim(1000, 0.8)
+    config.alg = "dsts"
+    megasim(1000, 0.8, 20)
 
-    x = np.linspace(0, 1000, 1500)
-    y = compile_info('reward')
+    x = np.linspace(0, 1000, 1000)
+    y = compile_info('fpr')
     plot_result(x, y, 'False Positive Rates Comparison Between the Two Algorithms',
             'Time Steps', 'False Positive Rates', 'False Positive Rates')
     return
