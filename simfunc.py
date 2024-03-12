@@ -60,8 +60,8 @@ def p_hat(alg_data:TimeSteps):
     p_hat = []
 
     for index in range(NUM_ARMS):
-        num_trails = alg_data.get_num_trails()
-        p_hat.append(alg_data.arms[index].total_pull/num_trails)
+        # alg_data.arms[index].total_reward / alg_data.arms[index].total_reward
+        p_hat.append(alg_data.arms[index].total_reward / alg_data.arms[index].total_pull)
 
     return p_hat
 
@@ -83,7 +83,7 @@ def fpr(alg):
     for index in range(NUM_ARMS):
         arm_total_pull.append(alg_data.arms[index].total_pull)
 
-    arm_total_trials = (1/(arm_total_pull[0]) - 1)*(1/(arm_total_pull[1]) - 1)
+    arm_total_trials = (1/(arm_total_pull[0] - 1)) + (1/(arm_total_pull[1] - 1))
 
     sd = np.sqrt(hyp_prob * arm_total_trials)
 
@@ -104,7 +104,7 @@ def power(alg):
         sim_data = dsts_sim_data
 
     p_hat_list = p_hat(alg_data)
-    p_hat_diff = p_hat_list[0] - 0.5
+    p_hat_diff = p_hat_list[0] - p_hat_list[1]
 
     var_1 = (p_hat_list[0] * (1 - p_hat_list[0])) / (alg_data.arms[0].total_pull - 1)
     var_2 = (p_hat_list[1] * (1 - p_hat_list[1])) / (alg_data.arms[1].total_pull - 1)
